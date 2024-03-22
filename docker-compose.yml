@@ -8,4 +8,4 @@ services:
       - 127.0.0.1:4000:3000
     environment:
       PORT: 3000
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm install && npm install express bcryptjs jsonwebtoken sequelize i18next js-yaml papaparse xml-js nodemon && npm run dev"
