@@ -10,6 +10,8 @@ services:
       PORT: 3000
       DATABASE_URL: postgres://user:password@database:5432/database
     command: sh -c "npm install && npm run dev"
+    networks:
+      - my-network
   
   database:
     image: postgres:alpine
@@ -20,7 +22,13 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - db-data-wsf:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - my-network
 
 volumes:
-  db-data-wsf:
+  db-data:
+
+networks:
+  my-network:
+    driver: bridge
