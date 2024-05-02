@@ -21,4 +21,9 @@ To get started with this project, follow the steps below:
     ```bash
     docker-compose up
 
+4. Run migration
+
+    ```bash
+    node migrate.js
+
 You're done
