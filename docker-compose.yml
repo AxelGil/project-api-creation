@@ -8,4 +8,19 @@ services:
       - 127.0.0.1:4000:3000
     environment:
       PORT: 3000
-    command: sh -c "npm install && npm install express bcryptjs jsonwebtoken sequelize i18next js-yaml papaparse xml-js nodemon && npm run dev"
+      DATABASE_URL: postgres://user:password@database:5432/database
+    command: sh -c "npm install && npm run dev"
+  
+  database:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database
+    ports:
+      - 5432:5432
+    volumes:
+      - db-data-wsf:/var/lib/postgresql/data
+
+volumes:
+  db-data-wsf:
