@@ -17,19 +17,18 @@ POST http://localhost:4000/api/games/create
 
 ###
 //getGameStatus
-GET http://localhost:4000/api/games/0f55accd-08f5-4b3c-909c-50334176147a
-
+GET http://localhost:4000/api/games/6937d7bd-b314-4fa6-8be3-f81cdf695138
 ###
 //resetGame
-PUT http://localhost:4000/api/games/0f55accd-08f5-4b3c-909c-50334176147a/reset
+PUT http://localhost:4000/api/games/6937d7bd-b314-4fa6-8be3-f81cdf695138/reset
 
 ###
 //Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-POST http://localhost:4000/api/games/0f55accd-08f5-4b3c-909c-50334176147a/moves
+POST http://localhost:4000/api/games/6937d7bd-b314-4fa6-8be3-f81cdf695138/moves
 Content-Type: application/json
 
 { 
-    "playerId": "61f269d2-9308-4d91-bdec-972e42e32fc7", 
+    "playerId": "27455dfe-b446-443c-b951-ff89ffd701dd", 
     "row": 1, 
-    "col": 1 
+    "col": 1
 }

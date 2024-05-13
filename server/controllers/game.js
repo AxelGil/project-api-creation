@@ -7,6 +7,7 @@ const DEFAULT_BOARD_STATE = [
 ];
 
 const parties = {};
+
 module.exports = {
   createGame: (req, res) => {
     let gameId;
@@ -21,6 +22,9 @@ module.exports = {
       player1Id: player1Id,
       player2Id: player2Id,
       currentPlayer: currentPlayer,
+      plateau: DEFAULT_BOARD_STATE,
+      movesCount: 0,
+      gameState: "inProgress",
     };
     parties[gameId] = game;
     res.json({ gameId: gameId, player1Id: player1Id, player2Id: player2Id });
@@ -41,11 +45,7 @@ module.exports = {
       return;
     }
     const game = parties[gameId];
-    game.plateau = [
-      [null, null, null],
-      [null, null, null],
-      [null, null, null],
-    ];
+    game.plateau = DEFAULT_BOARD_STATE;
     game.currentPlayer = game.player1Id;
     game.movesCount = 0;
     game.gameState = "inProgress";
@@ -53,53 +53,59 @@ module.exports = {
     res.json({ message: "Partie réinitialisée avec succès" });
   },
 
-  placeMove: (playerId, row, col) => {
-    if (this.gameState !== "inProgress") {
-      return "Perdu!";
+  placeMove: (playerId, row, col, req, res) => {
+    const gameId = req.params.gameId;
+    const game = parties[gameId];
+
+    if (game.gameState !== "inProgress") {
+      res.json("Perdu!");
+      return;
     }
 
-    if (playerId !== this.currentPlayer) {
-      return "Ce n'est pas ton tour!";
+    if (playerId !== game.currentPlayer) {
+      res.json("Ce n'est pas ton tour!");
+      return;
     }
 
-    if (this.plateau[row][col] !== null) {
-      return "Coup interdit!";
+    if (game.plateau[row][col] !== null) {
+      res.json("Coup interdit!");
+      return;
     }
 
-    this.plateau[row][col] = playerId === this.player1Id ? "X" : "O";
-    this.movesCount++;
+    game.plateau[row][col] = playerId === game.player1Id ? "X" : "O";
+    game.movesCount++;
 
-    this.currentPlayer =
-      this.currentPlayer === this.player1Id ? this.player2Id : this.player1Id;
+    game.currentPlayer =
+      game.currentPlayer === game.player1Id ? game.player2Id : game.player1Id;
 
-    const winner = this.checkWinner();
+    const winner = module.exports.checkWinner(game);
     if (winner) {
-      this.gameState = `Gagnant: ${winner}`;
-    } else if (this.movesCount === 9) {
-      this.gameState = "Draw";
+      game.gameState = `Gagnant: ${winner}`;
+    } else if (game.movesCount === 9) {
+      game.gameState = "Draw";
     }
 
     const response = {
       message: "Coup effectué",
-      board: this.plateau,
+      board: game.plateau,
     };
 
-    return response;
+    res.json(response);
   },
 
-  checkWinner: () => {
+  checkWinner: (game) => {
     const winningLines = [
       // Horizontal rows
-      [this.plateau[0][0], this.plateau[0][1], this.plateau[0][2]],
-      [this.plateau[1][0], this.plateau[1][1], this.plateau[1][2]],
-      [this.plateau[2][0], this.plateau[2][1], this.plateau[2][2]],
+      [game.plateau[0][0], game.plateau[0][1], game.plateau[0][2]],
+      [game.plateau[1][0], game.plateau[1][1], game.plateau[1][2]],
+      [game.plateau[2][0], game.plateau[2][1], game.plateau[2][2]],
       // Vertical columns
-      [this.plateau[0][0], this.plateau[1][0], this.plateau[2][0]],
-      [this.plateau[0][1], this.plateau[1][1], this.plateau[2][1]],
-      [this.plateau[0][2], this.plateau[1][2], this.plateau[2][2]],
+      [game.plateau[0][0], game.plateau[1][0], game.plateau[2][0]],
+      [game.plateau[0][1], game.plateau[1][1], game.plateau[2][1]],
+      [game.plateau[0][2], game.plateau[1][2], game.plateau[2][2]],
       // Diagonals
-      [this.plateau[0][0], this.plateau[1][1], this.plateau[2][2]],
-      [this.plateau[0][2], this.plateau[1][1], this.plateau[2][0]],
+      [game.plateau[0][0], game.plateau[1][1], game.plateau[2][2]],
+      [game.plateau[0][2], game.plateau[1][1], game.plateau[2][0]],
     ];
 
     for (const line of winningLines) {
