@@ -22,7 +22,7 @@ module.exports = {
       player1Id: player1Id,
       player2Id: player2Id,
       currentPlayer: currentPlayer,
-      plateau: DEFAULT_BOARD_STATE,
+      plateau: DEFAULT_BOARD_STATE.map(row => [...row]),
       movesCount: 0,
       gameState: "inProgress",
     };
@@ -45,7 +45,7 @@ module.exports = {
       return;
     }
     const game = parties[gameId];
-    game.plateau = DEFAULT_BOARD_STATE;
+    game.plateau = DEFAULT_BOARD_STATE.map(row => [...row]);
     game.currentPlayer = game.player1Id;
     game.movesCount = 0;
     game.gameState = "inProgress";
@@ -78,19 +78,22 @@ module.exports = {
 
     game.currentPlayer =
       game.currentPlayer === game.player1Id ? game.player2Id : game.player1Id;
-
-    const winner = module.exports.checkWinner(game);
-    if (winner) {
-      game.gameState = `Gagnant: ${winner}`;
-    } else if (game.movesCount === 9) {
-      game.gameState = "Draw";
-    }
-
-    const response = {
+    
+    
+      const response = {
       message: "Coup effectué",
       board: game.plateau,
     };
 
+
+    const winner = module.exports.checkWinner(game);
+    if (winner) {
+      game.gameState = `Gagnant: ${winner}`;
+      response.message = response.message + ` Gagnant: ${winner}`;
+    } else if (game.movesCount === 9) {
+      game.gameState = "Draw";
+    }
+    
     res.json(response);
   },
 
