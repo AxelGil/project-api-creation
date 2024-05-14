@@ -60,6 +60,10 @@ module.exports = {
     const { playerId, row, col } = req.body;
     const game = await Game.findByPk(req.params.gameId);
 
+    if (!game) {
+      return res.status(404).json({ message: "Game not found" });
+    }
+
     if (game.gameState !== "inProgress") {
       res.status(409).json({ message: "Game is not in progress" });
       return;
