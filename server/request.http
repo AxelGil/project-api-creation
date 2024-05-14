@@ -34,7 +34,7 @@ Content-Type: application/json
 ###
 //-----Wining game for player 1-----
 //Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-POST http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
+PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
 Content-Type: application/json
 
 { 
@@ -45,7 +45,7 @@ Content-Type: application/json
 
 ###
 //Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-POST http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
+PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
 Content-Type: application/json
 
 { 
@@ -56,7 +56,7 @@ Content-Type: application/json
 
 ###
 //Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-POST http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
+PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
 Content-Type: application/json
 
 { 
@@ -67,7 +67,7 @@ Content-Type: application/json
 
 ###
 //Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-POST http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
+PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
 Content-Type: application/json
 
 { 
@@ -79,7 +79,7 @@ Content-Type: application/json
 ###
 //-----winning here-----
 //Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-POST http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
+PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
 Content-Type: application/json
 
 { 
