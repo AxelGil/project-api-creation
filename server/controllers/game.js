@@ -53,7 +53,8 @@ module.exports = {
     res.json({ message: "Partie réinitialisée avec succès" });
   },
 
-  placeMove: (playerId, row, col, req, res) => {
+  placeMove: (req, res) => {
+    const { playerId, row, col } = req.body;
     const gameId = req.params.gameId;
     const game = parties[gameId];
 
