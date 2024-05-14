@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
+const { Game } = require("../models");
 
 const DEFAULT_BOARD_STATE = [
   [null, null, null],
@@ -6,61 +7,58 @@ const DEFAULT_BOARD_STATE = [
   [null, null, null],
 ];
 
-const parties = {};
-
 module.exports = {
-  post: (req, res) => {
-    let gameId;
-    do {
-      gameId = uuidv4();
-    } while (parties[gameId]);
-    const player1Id = uuidv4();
-    const player2Id = uuidv4();
-    const currentPlayer = player1Id;
-    const game = {
-      id: gameId,
-      player1Id: player1Id,
-      player2Id: player2Id,
-      currentPlayer: currentPlayer,
-      board: DEFAULT_BOARD_STATE.map(row => [...row]),
-      movesCount: 0,
-      gameState: "inProgress",
-    };
-    parties[gameId] = game;
-    res.status(201).json({ gameId: gameId, player1Id: player1Id, player2Id: player2Id });
-  },
-  iget: (req, res) => {
-    const gameId = req.params.gameId;
-    if (!parties[gameId]) {
-      res.status(404).send("Partie introuvable");
-      return;
+  post: async (req, res, next) => {
+    try {
+      const gameId = uuidv4();
+      const player1Id = uuidv4();
+      const player2Id = uuidv4();
+      const currentPlayer = player1Id;
+      const game = await Game.create({
+        id: gameId,
+        player1Id: player1Id,
+        player2Id: player2Id,
+        currentPlayer: currentPlayer,
+        board: DEFAULT_BOARD_STATE.map(row => [...row]),
+        movesCount: 0,
+        gameState: "inProgress",
+      });
+      
+      res.status(201).json(game);
+    } catch (error) {
+      next(error);
     }
-    const game = parties[gameId];
-    res.status(200).json(game);
   },
-  patch: (req, res) => {
+  iget: async (req, res, next) => {
     const gameId = req.params.gameId;
-    if (!parties[gameId]) {
-      res.status(404).send("Partie introuvable");
-      return;
+    const game = await Game.findByPk(gameId);
+
+    if (game) res.status(200).json(game);
+    else res.sendStatus(404);
+  },
+  patch: async (req, res, next) => {
+    try {
+      if (req.body.board === null) {
+        req.body.board = DEFAULT_BOARD_STATE.map(row => [...row]);
+      }
+      const [updated] = await Game.update(req.body, {
+        where: { id: req.params.gameId },
+      });
+  
+      if (updated) {
+        const updatedGame = await Game.findByPk(req.params.gameId);
+        return res.status(200).json(updatedGame);
+      } else {
+        return res.sendStatus(404);
+      }
+    } catch (error) {
+      next(error);
     }
-    const game = parties[gameId];
-    game.board = DEFAULT_BOARD_STATE.map(row => [...row]);
-    game.currentPlayer = game.player1Id;
-    game.movesCount = 0;
-    game.gameState = "inProgress";
-    parties[gameId] = game;
-    res.status(200).json({ message: "Partie réinitialisée avec succès" });
   },
 
-  placeMove: (req, res) => {
+  placeMove: async (req, res, next) => {
     const { playerId, row, col } = req.body;
-    const gameId = req.params.gameId;
-    if (!parties[gameId]) {
-      res.status(404).send("Partie introuvable");
-      return;
-    }
-    const game = parties[gameId];
+    const game = await Game.findByPk(req.params.gameId);
 
     if (game.gameState !== "inProgress") {
       res.status(409).json({ message: "Game is not in progress" });
@@ -68,7 +66,7 @@ module.exports = {
     }
 
     if (playerId !== game.currentPlayer) {
-      res.status(400).json({ message: "It's not your turn" });
+      res.status(403).json({ message: "It's not your turn" });
       return;
     }
 
@@ -82,23 +80,30 @@ module.exports = {
 
     game.currentPlayer =
       game.currentPlayer === game.player1Id ? game.player2Id : game.player1Id;
-    
-    
-      const response = {
-      message: "Coup effectué",
-      board: game.board,
-    };
-
 
     const winner = module.exports.checkWinner(game);
     if (winner) {
       game.gameState = `Gagnant: ${winner}`;
-      response.message = response.message + ` Gagnant: ${winner}`;
     } else if (game.movesCount === 9) {
       game.gameState = "Draw";
     }
 
-    res.status(200).json(response);
+    const [updated] = await Game.update(
+      { board: game.board, 
+        currentPlayer: game.currentPlayer, 
+        movesCount: game.movesCount, 
+        gameState: game.gameState
+      }
+    ,{
+      where: { id: game.id },
+    });
+
+    if (updated) {
+      const updatedGame = await Game.findByPk(game.id);
+      res.status(200).json(updatedGame);
+    } else {
+      res.sendStatus(404);
+    }
   },
 
   checkWinner: (game) => {
