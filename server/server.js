@@ -5,7 +5,9 @@ const i18next = require("i18next");
 const bodyParser = require('body-parser');
 const UserRouter = require("./routes/users");
 const SecurityRouter = require("./routes/security");
-const middlewares = require("./middlewares");
+const middlewaresformat = require("./middlewares/format.js");
+const middlewarestrad = require('./middlewares/negociate_trad.js');
+const middlewaresversion = require('./middlewares/mw-apiversion.js');
 const gameRoutes = require("./routes/game");
 
 const app = express();
@@ -20,30 +22,30 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 
 //Middleware pour gérer les formats
-app.use(middlewares.format())
+app.use(middlewaresformat.f())
 
 //Middleware de traduction
-app.use(middlewares.negociate_trad(i18next))
+app.use(middlewarestrad.negociate_trad(i18next))
 
 //MiddleWare de versionning
 const defaultVersion = "v2";
 app.use(
   "/api/games",
-  middlewares.apiVersions({
+  middlewaresversion.apiVersions({
     v1: require("./routes/v1/game.js"),
     v2: require("./routes/v2/game.js")
   }, "v2")
 );
 app.use(
   "/api/security",
-  middlewares.apiVersions({
+  middlewaresversion.apiVersions({
     v1: require("./routes/v1/security.js"),
     v2: require("./routes/v2/security.js")
   }, "v2")
 );
 app.use(
   "/api/users",
-  middlewares.apiVersions({
+  middlewaresversion.apiVersions({
     v1: require("./routes/v1/users.js"),
     v2: require("./routes/v2/users.js")
   }, "v2")
