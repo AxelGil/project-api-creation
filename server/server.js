@@ -22,30 +22,30 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 
 //Middleware pour gérer les formats
-app.use(middlewaresformat.f())
+app.use(middlewaresformat())
 
 //Middleware de traduction
-app.use(middlewarestrad.negociate_trad(i18next))
+app.use(middlewarestrad(i18next))
 
 //MiddleWare de versionning
 const defaultVersion = "v2";
 app.use(
   "/api/games",
-  middlewaresversion.apiVersions({
+  middlewaresversion({
     v1: require("./routes/v1/game.js"),
     v2: require("./routes/v2/game.js")
   }, "v2")
 );
 app.use(
   "/api/security",
-  middlewaresversion.apiVersions({
+  middlewaresversion({
     v1: require("./routes/v1/security.js"),
     v2: require("./routes/v2/security.js")
   }, "v2")
 );
 app.use(
   "/api/users",
-  middlewaresversion.apiVersions({
+  middlewaresversion({
     v1: require("./routes/v1/users.js"),
     v2: require("./routes/v2/users.js")
   }, "v2")

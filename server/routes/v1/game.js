@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const gameController = require("../controllers/game");
-const hateoasMiddleware = require("../middlewares/hateoasMiddleware");
+const gameController = require("../../controllers/game");
+const hateoasMiddleware = require("../../middlewares/hateoasMiddleware");
 
 const gameMovesHateoas = {
   placeMove: {

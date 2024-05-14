@@ -1,7 +1,7 @@
 const { Router } = require("express");
-const UserController = require("../controllers/users");
-const checkAuth = require("../middlewares/checkAuth");
-const checkRole = require("../middlewares/checkRole");
+const UserController = require("../../controllers/users");
+const checkAuth = require("../../middlewares/checkAuth");
+const checkRole = require("../../middlewares/checkRole");
 const router = new Router();
 
 // Collection route : GET : list users
