@@ -9,7 +9,7 @@ const DEFAULT_BOARD_STATE = [
 const parties = {};
 
 module.exports = {
-  createGame: (req, res) => {
+  post: (req, res) => {
     let gameId;
     do {
       gameId = uuidv4();
@@ -22,58 +22,62 @@ module.exports = {
       player1Id: player1Id,
       player2Id: player2Id,
       currentPlayer: currentPlayer,
-      plateau: DEFAULT_BOARD_STATE.map(row => [...row]),
+      board: DEFAULT_BOARD_STATE.map(row => [...row]),
       movesCount: 0,
       gameState: "inProgress",
     };
     parties[gameId] = game;
-    res.json({ gameId: gameId, player1Id: player1Id, player2Id: player2Id });
+    res.status(201).json({ gameId: gameId, player1Id: player1Id, player2Id: player2Id });
   },
-  getGameStatus: (req, res) => {
+  iget: (req, res) => {
     const gameId = req.params.gameId;
     if (!parties[gameId]) {
       res.status(404).send("Partie introuvable");
       return;
     }
     const game = parties[gameId];
-    res.json({ game: game });
+    res.status(200).json(game);
   },
-  resetGame: (req, res) => {
+  patch: (req, res) => {
     const gameId = req.params.gameId;
     if (!parties[gameId]) {
       res.status(404).send("Partie introuvable");
       return;
     }
     const game = parties[gameId];
-    game.plateau = DEFAULT_BOARD_STATE.map(row => [...row]);
+    game.board = DEFAULT_BOARD_STATE.map(row => [...row]);
     game.currentPlayer = game.player1Id;
     game.movesCount = 0;
     game.gameState = "inProgress";
     parties[gameId] = game;
-    res.json({ message: "Partie réinitialisée avec succès" });
+    res.status(200).json({ message: "Partie réinitialisée avec succès" });
   },
 
   placeMove: (req, res) => {
     const { playerId, row, col } = req.body;
     const gameId = req.params.gameId;
+    if (!parties[gameId]) {
+      res.status(404).send("Partie introuvable");
+      return;
+    }
     const game = parties[gameId];
 
     if (game.gameState !== "inProgress") {
-      res.json("Perdu!");
+      res.status(409).json({ message: "Game is not in progress" });
       return;
     }
 
     if (playerId !== game.currentPlayer) {
-      res.json("Ce n'est pas ton tour!");
+      res.status(400).json({ message: "It's not your turn" });
       return;
     }
 
-    if (game.plateau[row][col] !== null) {
-      res.json("Coup interdit!");
+    if (game.board[row][col] !== null) {
+      res.status(400).json({ message: "Invalid move" });
       return;
     }
 
-    game.plateau[row][col] = playerId === game.player1Id ? "X" : "O";
+    game.board[row][col] = playerId === game.player1Id ? "X" : "O";
     game.movesCount++;
 
     game.currentPlayer =
@@ -82,7 +86,7 @@ module.exports = {
     
       const response = {
       message: "Coup effectué",
-      board: game.plateau,
+      board: game.board,
     };
 
 
@@ -93,23 +97,23 @@ module.exports = {
     } else if (game.movesCount === 9) {
       game.gameState = "Draw";
     }
-    
-    res.json(response);
+
+    res.status(200).json(response);
   },
 
   checkWinner: (game) => {
     const winningLines = [
       // Horizontal rows
-      [game.plateau[0][0], game.plateau[0][1], game.plateau[0][2]],
-      [game.plateau[1][0], game.plateau[1][1], game.plateau[1][2]],
-      [game.plateau[2][0], game.plateau[2][1], game.plateau[2][2]],
+      [game.board[0][0], game.board[0][1], game.board[0][2]],
+      [game.board[1][0], game.board[1][1], game.board[1][2]],
+      [game.board[2][0], game.board[2][1], game.board[2][2]],
       // Vertical columns
-      [game.plateau[0][0], game.plateau[1][0], game.plateau[2][0]],
-      [game.plateau[0][1], game.plateau[1][1], game.plateau[2][1]],
-      [game.plateau[0][2], game.plateau[1][2], game.plateau[2][2]],
+      [game.board[0][0], game.board[1][0], game.board[2][0]],
+      [game.board[0][1], game.board[1][1], game.board[2][1]],
+      [game.board[0][2], game.board[1][2], game.board[2][2]],
       // Diagonals
-      [game.plateau[0][0], game.plateau[1][1], game.plateau[2][2]],
-      [game.plateau[0][2], game.plateau[1][1], game.plateau[2][0]],
+      [game.board[0][0], game.board[1][1], game.board[2][2]],
+      [game.board[0][2], game.board[1][1], game.board[2][0]],
     ];
 
     for (const line of winningLines) {
