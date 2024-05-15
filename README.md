@@ -1,6 +1,7 @@
 # Project API Creation
 
 This project is an API creation template.
+Made by Axel GIL and Corentin LAURENT
 
 ## Getting Started
 
@@ -27,3 +28,4 @@ To get started with this project, follow the steps below:
     node migrate.js
 
 You're done
+go ahead in the [request.http](https://github.com/AxelGil/project-api-creation/blob/dev/server/request.http) file, the api calls are already done, you just have to execute theme.
