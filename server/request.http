@@ -1,16 +1,3 @@
-
-GET http://localhost:4000/users
-
-###
-POST http://localhost:4000/users
-Content-Type: application/json
-
-{
-    "lastname": "Doe",
-    "email": "test3@test.com",
-    "password": "Azerty12345!"
-}
-
 ### Request JSON
 GET http://localhost:4000/data
 Accept: application/json
@@ -23,10 +10,81 @@ Accept: text/csv
 GET http://localhost:4000/data
 Accept: application/xml
 
-### Request YAML
+### Request YAML with translation in french
 GET http://localhost:4000/data
 Accept: application/yaml
 Accept-Language: fr
+
+### doesn't work because need authorization, done after
+GET http://localhost:4000/users
+
+### user -> role user
+POST http://localhost:4000/users
+Content-Type: application/json
+
+{
+    "lastname": "Doe",
+    "email": "test3@test.com",
+    "password": "Azerty12345!"
+}
+
+### user -> role admin
+POST http://localhost:4000/users
+Content-Type: application/json
+
+{
+    "lastname": "Admin",
+    "email": "test4@test.com",
+    "password": "Azerty12345!",
+    "role": "admin"
+}
+
+### get user with id replace {id} with the actual id
+GET http://localhost:4000/users/7f933b1b-1de0-4932-b29d-8639eba97334
+
+### login return a token to put in the Authorization header like -> Authorization: Bearer {token}
+POST http://localhost:4000/login
+Content-Type: application/json
+
+{
+    "email": "test3@test.com",
+    "password": "Azerty12345!"
+}
+
+### login return a token to put in the Authorization header like -> Authorization: Bearer {token}
+POST http://localhost:4000/login
+Content-Type: application/json
+
+{
+    "email": "test4@test.com",
+    "password": "Azerty12345!"
+}
+
+### update user with id
+PATCH http://localhost:4000/users/8a3b172d-49e3-4149-88ef-885ed2344c86
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI4YTNiMTcyZC00OWUzLTQxNDktODhlZi04ODVlZDIzNDRjODYiLCJmdWxsTmFtZSI6IkFkbWluIGpvaG4iLCJpYXQiOjE3MTU3ODg2MTB9.HWADWLLsdqXf-lYnndCTzfYL_SgTmSjZTAqxNEuIjiM
+
+{
+    "firstname": "john"
+}
+
+### Request api versions -> v1 no auth needed
+GET http://localhost:4000/api/users
+Accept: application/json
+Accept-Version: v1
+
+
+### Request api versions -> v2 needs auth - without auth header
+GET http://localhost:4000/api/users
+Accept: application/json
+Accept-Version: v2
+
+### Request api versions -> v2 needs auth - with auth header
+GET http://localhost:4000/api/users
+Accept: application/json
+Accept-Version: v2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI4YTNiMTcyZC00OWUzLTQxNDktODhlZi04ODVlZDIzNDRjODYiLCJmdWxsTmFtZSI6IkFkbWluIG51bGwiLCJpYXQiOjE3MTU3ODc0NjB9.pIZ7GUoJn8-P8xh3VxdBPSYoVSUBqE6ZS_WNBkputzI
 
 ###
 //create a Game
@@ -34,14 +92,14 @@ POST http://localhost:4000/api/games
 
 ###
 //get the Game
-GET http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588
+GET http://localhost:4000/api/games/fdfc5b1d-e5e1-46f8-a4c8-90c358ca61d1
 ###
 //reset the Game
-PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588
+PATCH http://localhost:4000/api/games/fdfc5b1d-e5e1-46f8-a4c8-90c358ca61d1
 Content-Type: application/json
 
 {
-    "currentPlayer": "7d9736de-5949-4f9b-a4ef-54d2bd7db288",
+    "currentPlayer": "94f0ce22-78ed-4591-acc7-7d304935cd03",
     "board" : null,
     "movesCount": 0,
     "gameState": "inProgress"
@@ -50,57 +108,57 @@ Content-Type: application/json
 
 ###
 //-----Wining game for player 1-----
-//Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
+//Replace with the actual game ID, with the ID of the player making the move, with the row number (0-2) and with the column number (0-2).
+PATCH http://localhost:4000/api/games/fdfc5b1d-e5e1-46f8-a4c8-90c358ca61d1/moves
 Content-Type: application/json
 
 { 
-    "playerId": "7d9736de-5949-4f9b-a4ef-54d2bd7db288", 
+    "playerId": "94f0ce22-78ed-4591-acc7-7d304935cd03", 
     "row": 1, 
     "col": 1
 }
 
 ###
-//Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
+//Replace with the actual game ID, with the ID of the player making the move, with the row number (0-2) and with the column number (0-2).
+PATCH http://localhost:4000/api/games/fdfc5b1d-e5e1-46f8-a4c8-90c358ca61d1/moves
 Content-Type: application/json
 
 { 
-    "playerId": "dda30265-d4df-41d2-b151-e5e8f335f830", 
+    "playerId": "6a9a7912-dfc5-43d4-abf2-574f7a3cbe3c", 
     "row": 0, 
     "col": 0
 }
 
 ###
-//Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
+//Replace with the actual game ID, with the ID of the player making the move, with the row number (0-2) and with the column number (0-2).
+PATCH http://localhost:4000/api/games/fdfc5b1d-e5e1-46f8-a4c8-90c358ca61d1/moves
 Content-Type: application/json
 
 { 
-    "playerId": "7d9736de-5949-4f9b-a4ef-54d2bd7db288", 
+    "playerId": "94f0ce22-78ed-4591-acc7-7d304935cd03", 
     "row": 0, 
     "col": 1
 }
 
 ###
-//Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
+//Replace with the actual game ID, with the ID of the player making the move, with the row number (0-2) and with the column number (0-2).
+PATCH http://localhost:4000/api/games/fdfc5b1d-e5e1-46f8-a4c8-90c358ca61d1/moves
 Content-Type: application/json
 
 { 
-    "playerId": "dda30265-d4df-41d2-b151-e5e8f335f830", 
+    "playerId": "6a9a7912-dfc5-43d4-abf2-574f7a3cbe3c", 
     "row": 2, 
     "col": 2
 }
 
 ###
 //-----winning here-----
-//Replace {gameId} with the actual game ID, {playerId} with the ID of the player making the move, {row} with the row number (0-2), and {col} with the column number (0-2).
-PATCH http://localhost:4000/api/games/617de8ae-40a7-47f1-a545-fee3a6dcd588/moves
+//Replace with the actual game ID, with the ID of the player making the move, with the row number (0-2) and with the column number (0-2).
+PATCH http://localhost:4000/api/games/fdfc5b1d-e5e1-46f8-a4c8-90c358ca61d1/moves
 Content-Type: application/json
 
 { 
-    "playerId": "7d9736de-5949-4f9b-a4ef-54d2bd7db288", 
+    "playerId": "94f0ce22-78ed-4591-acc7-7d304935cd03", 
     "row": 2, 
     "col": 1
 }
