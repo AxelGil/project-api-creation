@@ -57,56 +57,57 @@ module.exports = {
   },
 
   placeMove: async (req, res, next) => {
-    const { playerId, row, col } = req.body;
-    const game = await Game.findByPk(req.params.gameId);
+    try {
+      const { playerId, row, col } = req.body;
+      const game = await Game.findByPk(req.params.gameId);
 
-    if (!game) {
-      return res.status(404).json({ message: res.render(res.t("Game not found")) });
-    }
-
-    if (game.gameState !== "inProgress") {
-      res.status(409).json({ message: res.render(res.t("Game is not in progress")) });
-      return;
-    }
-
-    if (playerId !== game.currentPlayer) {
-      res.status(403).json({ message: res.render(res.t("It's not your turn")) });
-      return;
-    }
-
-    if (game.board[row][col] !== null) {
-      res.status(400).json({ message: res.render(res.t("Invalid move")) });
-      return;
-    }
-
-    game.board[row][col] = playerId === game.player1Id ? "X" : "O";
-    game.movesCount++;
-
-    game.currentPlayer =
-      game.currentPlayer === game.player1Id ? game.player2Id : game.player1Id;
-
-    const winner = module.exports.checkWinner(game);
-    if (winner) {
-      game.gameState = `Gagnant: ${winner}`;
-    } else if (game.movesCount === 9) {
-      game.gameState = "Draw";
-    }
-
-    const [updated] = await Game.update(
-      { board: game.board, 
-        currentPlayer: game.currentPlayer, 
-        movesCount: game.movesCount, 
-        gameState: game.gameState
+      if (!game) {
+        res.status(404).json({ message: res.render(res.t("Game not found")) });
       }
-    ,{
-      where: { id: game.id },
-    });
 
-    if (updated) {
-      const updatedGame = await Game.findByPk(game.id);
-      res.status(200).json(updatedGame);
-    } else {
-      res.sendStatus(404);
+      if (game.gameState !== "inProgress") {
+        return res.status(409).json({ message: res.render(res.t("Game is not in progress")) });
+      }
+
+      if (playerId !== game.currentPlayer) {
+        return res.status(403).json({ message: res.render(res.t("It's not your turn")) });
+      }
+
+      if (game.board[row][col] !== null) {
+        return res.status(400).json({ message: res.render(res.t("Invalid move")) });
+      }
+
+      game.board[row][col] = playerId === game.player1Id ? "X" : "O";
+      game.movesCount++;
+
+      game.currentPlayer =
+        game.currentPlayer === game.player1Id ? game.player2Id : game.player1Id;
+
+      const winner = module.exports.checkWinner(game);
+      if (winner) {
+        game.gameState = `Gagnant: ${winner}`;
+      } else if (game.movesCount === 9) {
+        game.gameState = "Draw";
+      }
+
+      const [updated] = await Game.update(
+        { board: game.board, 
+          currentPlayer: game.currentPlayer, 
+          movesCount: game.movesCount, 
+          gameState: game.gameState
+        }
+      ,{
+        where: { id: game.id },
+      });
+
+      if (updated) {
+        const updatedGame = await Game.findByPk(game.id);
+        return res.status(200).json(updatedGame);
+      } else {
+        return res.sendStatus(404);
+      }
+    } catch (error) {
+      next();
     }
   },
 
