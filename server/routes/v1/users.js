@@ -7,8 +7,6 @@ const router = new Router();
 // Collection route : GET : list users
 router.get(
   "",
-  /* middlewares */ checkAuth,
-  checkRole("admin"),
   UserController.cget
 );
 // Collection route : POST : create an user
