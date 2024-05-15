@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 //const cors = require("cors");
-const i18next = require("i18next");
+const  i18next = require("./lib/i18n.js");
 const bodyParser = require('body-parser');
 const UserRouter = require("./routes/users");
 const SecurityRouter = require("./routes/security");
@@ -58,7 +58,8 @@ app.use("/api/games", gameRoutes);
 app.get('/data', (req, res) => {
   const data = [
       { id: 1, name: "Alice" },
-      { id: 2, name: "Bob" }
+      { id: 2, name: "Bob" },
+      { id: 3, name: res.t('Game not found')}
   ];
   res.render(data);
 });

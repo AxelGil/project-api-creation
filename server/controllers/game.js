@@ -61,21 +61,21 @@ module.exports = {
     const game = await Game.findByPk(req.params.gameId);
 
     if (!game) {
-      return res.status(404).json({ message: "Game not found" });
+      return res.status(404).json({ message: res.render(res.t("Game not found")) });
     }
 
     if (game.gameState !== "inProgress") {
-      res.status(409).json({ message: "Game is not in progress" });
+      res.status(409).json({ message: res.render(res.t("Game is not in progress")) });
       return;
     }
 
     if (playerId !== game.currentPlayer) {
-      res.status(403).json({ message: "It's not your turn" });
+      res.status(403).json({ message: res.render(res.t("It's not your turn")) });
       return;
     }
 
     if (game.board[row][col] !== null) {
-      res.status(400).json({ message: "Invalid move" });
+      res.status(400).json({ message: res.render(res.t("Invalid move")) });
       return;
     }
 
