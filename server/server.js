@@ -29,26 +29,13 @@ app.use(middlewarestrad(i18next))
 
 //MiddleWare de versionning
 const defaultVersion = "v2";
-app.use(
-  "/api/games",
-  middlewaresversion({
-    v1: require("./routes/v1/game.js"),
-    v2: require("./routes/v2/game.js")
-  }, "v2")
-);
-app.use(
-  "/api/security",
-  middlewaresversion({
-    v1: require("./routes/v1/security.js"),
-    v2: require("./routes/v2/security.js")
-  }, "v2")
-);
+
 app.use(
   "/api/users",
   middlewaresversion({
     v1: require("./routes/v1/users.js"),
     v2: require("./routes/v2/users.js")
-  }, "v2")
+  }, defaultVersion)
 );
 
 app.use(SecurityRouter);
